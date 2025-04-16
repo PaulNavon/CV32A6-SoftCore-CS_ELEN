@@ -9,8 +9,13 @@
 
 int main()
 {
-    init_uart(50000000, 115200);
+    init_uart(40000000, 115200);
     print_uart("Hello World!\r\n");
+    print_uart("a");
+    print_uart("l");
+    print_uart("o");
+    print_uart("\n");
+    print_uart("BBBB\r\n");
 
     /*int res = gpt_find_boot_partition((uint8_t *)0x80000000UL, 2 * 16384);
 

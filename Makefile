@@ -39,7 +39,7 @@ max_cycles     ?= 1000000000
 test_case      ?= core_test
 # QuestaSim Version
 questa_version ?= ${QUESTASIM_VERSION}
-VLOG ?= vlog$(questa_version)
+VLOG ?= vlog$(questa_version) -suppress 13389
 VSIM ?= vsim$(questa_version)
 VOPT ?= vopt$(questa_version)
 VCOM ?= vcom$(questa_version)

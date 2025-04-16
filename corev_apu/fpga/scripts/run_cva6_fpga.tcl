@@ -92,37 +92,9 @@ if { $::env(PS7_DDR) == 1 } {
    puts "None of the values is matching"
 }
 
-######################################################################################################################
 
-# Synth Design Optimizations
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY}         -value {rebuilt} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.GATED_CLOCK_CONVERSION}    -value {auto} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.BUFG}                      -value {24} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.DIRECTIVE}                 -value {RuntimeOptimized} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.GLOBAL_RETIMING}           -value {on} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.FSM_EXTRACTION}            -value {one_hot} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.KEEP_EQUIVALENT_REGISTERS} -value {on} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.RESOURCE_SHARING}          -value {off} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.NO_LC}                     -value {on} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.NO_SRLEXTRACT}             -value {on} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.SHREG_MIN_SIZE}            -value {24} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.MAX_BRAM}                  -value {-1} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.MAX_URAM}                  -value {-1} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.MAX_DSP}                   -value {-1} -objects [get_runs synth_1]
-set_property -name {STEPS.SYNTH_DESIGN.ARGS.CASCADE_DSP}               -value {tree} -objects [get_runs synth_1]
-
-#set_property -name {STEPS.OPT_DESIGN.ARGS.MORE OPTIONS} -value {-carry_remap -bufg_opt} -objects [get_runs impl_1]
-
-# Repositionne les registres dans le design pour équilibrer les délais de propagation entre les étapes de pipeline
+set_property strategy Flow_PerfOptimized_high [get_runs synth_1]
 set_property STEPS.SYNTH_DESIGN.ARGS.RETIMING true [get_runs synth_1]
-
-# Optimisez les registres de contrôle pour améliorer la performance des chemins critiques
-set_property STEPS.SYNTH_DESIGN.ARGS.CONTROL_SET_OPT_THRESHOLD 64 [get_runs synth_1]
-
-set_property STEPS.SYNTH_DESIGN.ARGS.INCREMENTAL_MODE aggressive [get_runs synth_1]
-
-
-######################################################################################################################
 
 launch_runs synth_1
 wait_on_run synth_1
@@ -139,87 +111,14 @@ report_utilization -hierarchical                                        -file re
 report_cdc                                                              -file reports_cva6_fpga_synth/$project.cdc.rpt
 report_clock_interaction                                                -file reports_cva6_fpga_synth/$project.clock_interaction.rpt
 
-######################################################################################################################
+# set for RuntimeOptimized implementation
+set_property "steps.place_design.args.directive" "Explore" [get_runs impl_1]
+set_property "steps.route_design.args.directive" "Explore" [get_runs impl_1]
 
-## Implementation Optimizations
-# Opt Design
-set_property STEPS.OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
-set_property STEPS.OPT_DESIGN.ARGS.VERBOSE true [get_runs impl_1]
-set_property STEPS.OPT_DESIGN.ARGS.DIRECTIVE Explore [get_runs impl_1]
+#create_clock -period $::env(CLK_PERIOD_NS) -name clk_out1_xlnx_clk_gen  [get_ports clk_out1_xlnx_clk_gen]
 
-#set_property -name {STEPS.OPT_DESIGN.ARGS.MORE_OPTIONS} -value {-retarget -propconst -sweep -muxf_remap -carry_remap -control_set_merge -merge_equivalent_drivers -bufg_opt -shift_register_opt -mbufg_opt -dsp_register_opt -hier_fanout_limit 64 -control_set_opt -remap -resynth_remap} -objects [get_runs impl_1]
+#set_property HD.CLK_SRC BUFGCTRL_X1Y2 [get_ports clk_i]
 
-# Désactiver les options liées à l'optimisation de l'aire (on favorise la fréquence)
-#set_property -name {STEPS.OPT_DESIGN.ARGS.MORE_OPTIONS} -value {-resynth_area false -resynth_seq_area false -bram_power_opt false} -objects [get_runs impl_1]
-
-
-#set_property STEPS.OPT_DESIGN.ARGS.RETARGET true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.PROPCONST true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.SWEEP true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.MUXF_REMAP true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.CARRY_REMAP true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.CONTROL_SET_MERGE true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.MERGE_EQUIVALENT_DRIVERS true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.BUFG_OPT true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.SHIFT_REGISTER_OPT true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.MBUFG_OPT true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.DSP_REGISTER_OPT true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.HIER_FANOUT_LIMIT 64 [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.CONTROL_SET_OPT true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.REMAP true [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.RESYNTH_REMAP true [get_runs impl_1]
-
-## Désactiver les options liées à l'optimisation de l'aire (on favorise la fréquence)
-#set_property STEPS.OPT_DESIGN.ARGS.RESYNTH_AREA false [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.RESYNTH_SEQ_AREA false [get_runs impl_1]
-#set_property STEPS.OPT_DESIGN.ARGS.BRAM_POWER_OPT false [get_runs impl_1]
-
-
-# Power Opt Design
-set_property STEPS.POWER_OPT_DESIGN.IS_ENABLED false [get_runs impl_1]
-#set_property STEPS.POWER_OPT_DESIGN.ARGS.MORE_OPTIONS {} [get_runs impl_1]
-
-# Place Design
-set_property STEPS.PLACE_DESIGN.ARGS.DIRECTIVE ExtraTimingOpt [get_runs impl_1]
-#set_property STEPS.PLACE_DESIGN.ARGS.MORE_OPTIONS {-timing_driven -ultrathreads} [get_runs impl_1]
-
-# Post-Place Power Opt design
-set_property STEPS.POST_PLACE_POWER_OPT_DESIGN.IS_ENABLED false [get_runs impl_1]
-#set_property STEPS.POST_PLACE_POWER_OPT_DESIGN.ARGS.MORE_OPTIONS {} [get_runs impl_1]
-
-# Post-Place Phys Opt Design
-set_property STEPS.PHYS_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
-set_property STEPS.PHYS_OPT_DESIGN.ARGS.DIRECTIVE AggressiveExplore [get_runs impl_1]
-#set_property STEPS.PHYS_OPT_DESIGN.ARGS.MORE_OPTIONS {-fanout_opt -placement_opt -critical_cell_opt -rewire -retime} [get_runs impl_1]
-
-# Route Design
-set_property STEPS.ROUTE_DESIGN.ARGS.DIRECTIVE AggressiveExplore [get_runs impl_1]
-#set_property STEPS.ROUTE_DESIGN.ARGS.MORE_OPTIONS {-timing_driven -ultrathreads} [get_runs impl_1]
-
-# Post-Route Phys Opt Design
-set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
-set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.ARGS.DIRECTIVE AggressiveExplore [get_runs impl_1]
-#set_property STEPS.POST_ROUTE_PHYS_OPT_DESIGN.ARGS.MORE_OPTIONS {-critical_cell_opt -rewire -hold_fix -retime} [get_runs impl_1]
-
-# Write Bitsream
-set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE true [get_runs impl_1]
-set_property STEPS.WRITE_BITSTREAM.ARGS.VERBOSE true [get_runs impl_1]
-#set_property STEPS.WRITE_BITSTREAM.ARGS.MORE_OPTIONS {-g Compress} [get_runs impl_1]
-
-# Set max fanout to a specific value
-#set_max_fanout -hierarchical -max_fanout 10 [get_nets *]
-
-# Contraintes de timing agressives
-#create_clock -period 6 -name virtual_clock
-#set_max_delay 8 -from [all_inputs] -to [all_outputs]
-#set_max_delay 6 -from [get_ports] -to [get_ports]
-
-
-# Signals routing with max agressivity
-#set_property ROUTE_QUALITY 10 [get_runs impl_1]
-
-
-######################################################################################################################
 
 launch_runs impl_1
 wait_on_run impl_1

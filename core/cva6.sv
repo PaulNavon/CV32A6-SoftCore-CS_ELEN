@@ -951,12 +951,25 @@ module cva6
   dcache_req_i_t [NumPorts-1:0] dcache_req_to_cache;
   dcache_req_o_t [NumPorts-1:0] dcache_req_from_cache;
 
+ 
   // D$ request
-  assign dcache_req_to_cache[0] = dcache_req_ports_ex_cache[0];
-  assign dcache_req_to_cache[1] = dcache_req_ports_ex_cache[1];
-  assign dcache_req_to_cache[2] = dcache_req_ports_acc_cache[0];
-  assign dcache_req_to_cache[3] = dcache_req_ports_ex_cache[2].data_req ? dcache_req_ports_ex_cache [2] :
+  //assign dcache_req_to_cache[0] = dcache_req_ports_ex_cache[0];
+  //assign dcache_req_to_cache[1] = dcache_req_ports_ex_cache[1];
+  //assign dcache_req_to_cache[2] = dcache_req_ports_acc_cache[0];
+  //assign dcache_req_to_cache[3] = dcache_req_ports_ex_cache[2].data_req ? dcache_req_ports_ex_cache [2] :
+  //                                                                        dcache_req_ports_acc_cache[1];
+
+  always_ff@(posedge clk_i or negedge rst_ni) begin
+      if (!rst_ni) begin
+        dcache_req_to_cache <= '0;  // Reset all signals
+      end else begin
+  	dcache_req_to_cache[0] <= dcache_req_ports_ex_cache[0];
+  	dcache_req_to_cache[1] <= dcache_req_ports_ex_cache[1];
+  	dcache_req_to_cache[2] <= dcache_req_ports_acc_cache[0];
+	dcache_req_to_cache[3] <= dcache_req_ports_ex_cache[2].data_req ? dcache_req_ports_ex_cache [2] :
                                                                           dcache_req_ports_acc_cache[1];
+      end
+  end 
 
   // D$ response
   assign dcache_req_ports_cache_ex[0] = dcache_req_from_cache[0];

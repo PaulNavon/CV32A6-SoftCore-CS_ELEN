@@ -56,6 +56,7 @@ module load_unit
     IDLE,
     WAIT_GNT,
     SEND_TAG,
+    SEND_TAG_PREV,
     WAIT_PAGE_OFFSET,
     ABORT_TRANSACTION,
     ABORT_TRANSACTION_NI,
@@ -97,7 +98,7 @@ module load_unit
   ldbuf_t    ldbuf_rdata;
   ldbuf_id_t ldbuf_rindex;
   ldbuf_id_t ldbuf_last_id_q;
-
+  
   assign ldbuf_full = &ldbuf_valid_q;
 
   //
@@ -309,6 +310,11 @@ module load_unit
         end
         // otherwise we keep waiting on our grant
       end
+      
+      SEND_TAG_PREV: begin
+      	state_d = SEND_TAG;
+      end
+      
       // we know for sure that the tag we want to send is valid
       SEND_TAG: begin
         req_port_o.tag_valid = 1'b1;

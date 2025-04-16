@@ -21,7 +21,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='/home/RISCV-2425/Livre_d_Or/cva6_rendu/CV32A6-SoftCore-CS_ELEN/corev_apu/fpga/cva6_fpga.runs/synth_1'
+HD_PWD='/home/RISCV-2425/cva6_proto/cva6-softcore-contest/corev_apu/fpga/cva6_fpga.runs/synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log

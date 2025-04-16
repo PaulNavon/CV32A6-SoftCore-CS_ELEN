@@ -55,8 +55,10 @@ module wt_dcache_ctrl
 );
 
   // controller FSM
-  typedef enum logic [2:0] {
+  typedef enum logic [3:0] { // PN : Modif State machine
     IDLE,
+    IDLE_NEXT,
+    IDLE_PREV,
     READ,
     MISS_REQ,
     MISS_WAIT,
@@ -129,6 +131,11 @@ module wt_dcache_ctrl
 
     // interfaces
     unique case (state_q)
+    
+      IDLE_PREV: begin
+      	state_d = IDLE; // PN : Ajout latence supplémentaire
+      end
+      
       //////////////////////////////////
       // wait for an incoming request
       IDLE: begin
@@ -136,11 +143,19 @@ module wt_dcache_ctrl
           rd_req_o = 1'b1;
           // if read ack then ack the `req_port_o`, and goto `READ` state
           if (rd_ack_i) begin
-            state_d = READ;
+            state_d = IDLE_NEXT; // PN : Modif state machine
             req_port_o.data_gnt = 1'b1;
+            // read_req qd gnt high ?
           end
         end
       end
+      
+      IDLE_NEXT: begin
+      	state_d = READ; // PN : Ajout latence supplémentaire
+      	rd_req_o = 1'b1;
+      	//req_port_o.data_gnt    = 1'b1;
+      end
+      
       //////////////////////////////////
       // check whether we have a hit
       // in case the cache is disabled,
@@ -153,7 +168,7 @@ module wt_dcache_ctrl
 
         // kill -> go back to IDLE
         if (req_port_i.kill_req) begin
-          state_d = IDLE;
+          state_d = IDLE_PREV;
           req_port_o.data_rvalid = 1'b1;
         end else if (req_port_i.tag_valid | state_q == REPLAY_READ) begin
           save_tag = (state_q != REPLAY_READ);
@@ -161,7 +176,7 @@ module wt_dcache_ctrl
             state_d = REPLAY_REQ;
             // we've got a hit
           end else if ((|rd_hit_oh_i) && cache_en_i) begin
-            state_d = IDLE;
+            state_d = IDLE_PREV;
             req_port_o.data_rvalid = 1'b1;
             // we can handle another request
             if (rd_ack_i && req_port_i.data_req) begin
@@ -199,12 +214,12 @@ module wt_dcache_ctrl
         if (req_port_i.kill_req) begin
           req_port_o.data_rvalid = 1'b1;
           if (miss_rtrn_vld_i) begin
-            state_d = IDLE;
+            state_d = IDLE_PREV;
           end else begin
             state_d = KILL_MISS;
           end
         end else if (miss_rtrn_vld_i) begin
-          state_d = IDLE;
+          state_d = IDLE_PREV;
           req_port_o.data_rvalid = 1'b1;
         end
       end
@@ -214,7 +229,7 @@ module wt_dcache_ctrl
         rd_req_o = 1'b1;
         if (req_port_i.kill_req) begin
           req_port_o.data_rvalid = 1'b1;
-          state_d = IDLE;
+          state_d = IDLE_PREV;
         end else if (rd_ack_i) begin
           state_d = REPLAY_READ;
         end
@@ -225,7 +240,7 @@ module wt_dcache_ctrl
         // in this case the miss handler did not issue
         // a transaction and we can safely go to idle
         if (miss_replay_i) begin
-          state_d = IDLE;
+          state_d = IDLE_PREV;
         end else if (miss_ack_i) begin
           state_d = KILL_MISS;
         end
@@ -236,12 +251,12 @@ module wt_dcache_ctrl
       // go back to idle
       KILL_MISS: begin
         if (miss_rtrn_vld_i) begin
-          state_d = IDLE;
+          state_d = IDLE_PREV;
         end
       end
       default: begin
         // we should never get here
-        state_d = IDLE;
+        state_d = IDLE_PREV;
       end
     endcase  // state_q
   end
@@ -252,7 +267,7 @@ module wt_dcache_ctrl
 
   always_ff @(posedge clk_i or negedge rst_ni) begin : p_regs
     if (!rst_ni) begin
-      state_q       <= IDLE;
+      state_q       <= IDLE_PREV;
       address_tag_q <= '0;
       address_idx_q <= '0;
       address_off_q <= '0;

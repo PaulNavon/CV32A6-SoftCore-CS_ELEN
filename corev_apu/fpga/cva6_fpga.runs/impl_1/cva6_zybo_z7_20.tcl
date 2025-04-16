@@ -1,5 +1,5 @@
 namespace eval ::optrace {
-  variable script "/home/RISCV-2425/Livre_d_Or/cva6_rendu/CV32A6-SoftCore-CS_ELEN/corev_apu/fpga/cva6_fpga.runs/impl_1/cva6_zybo_z7_20.tcl"
+  variable script "/home/RISCV-2425/cva6_proto/cva6-softcore-contest/corev_apu/fpga/cva6_fpga.runs/impl_1/cva6_zybo_z7_20.tcl"
   variable category "vivado_impl"
 }
 
@@ -111,10 +111,10 @@ set rc [catch {
   create_msg_db write_bitstream.pb
   set_param checkpoint.writeSynthRtdsInDcp 1
   set_param chipscope.maxJobs 1
-  set_param synth.incrementalSynthesisCache ./.Xil/Vivado-17630-aubervilliers/incrSyn
+  set_param synth.incrementalSynthesisCache ./.Xil/Vivado-1395164-aubervilliers/incrSyn
   set_param runs.launchOptions { -jobs 1  }
-  open_checkpoint cva6_zybo_z7_20_postroute_physopt.dcp
-  set_property webtalk.parent_dir /home/RISCV-2425/Livre_d_Or/cva6_rendu/CV32A6-SoftCore-CS_ELEN/corev_apu/fpga/cva6_fpga.cache/wt [current_project]
+  open_checkpoint cva6_zybo_z7_20_routed.dcp
+  set_property webtalk.parent_dir /home/RISCV-2425/cva6_proto/cva6-softcore-contest/corev_apu/fpga/cva6_fpga.cache/wt [current_project]
 set_property TOP cva6_zybo_z7_20 [current_fileset]
 OPTRACE "read constraints: write_bitstream" START { }
 OPTRACE "read constraints: write_bitstream" END { }
@@ -122,7 +122,7 @@ OPTRACE "read constraints: write_bitstream" END { }
   catch { write_mem_info -force -no_partial_mmi cva6_zybo_z7_20.mmi }
 OPTRACE "write_bitstream setup" END { }
 OPTRACE "write_bitstream" START { }
-  write_bitstream -force cva6_zybo_z7_20.bit -bin_file -verbose
+  write_bitstream -force cva6_zybo_z7_20.bit 
 OPTRACE "write_bitstream" END { }
 OPTRACE "write_bitstream misc" START { }
 OPTRACE "read constraints: write_bitstream_post" START { }

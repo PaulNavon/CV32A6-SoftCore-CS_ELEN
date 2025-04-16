@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1744815587">
+<GenRun Id="synth_1" LaunchPart="xc7z020clg400-1" LaunchTime="1743787182">
   <File Type="VDS-TIMING-PB" Name="cva6_zybo_z7_20_timing_summary_synth.pb"/>
   <File Type="VDS-TIMINGSUMMARY" Name="cva6_zybo_z7_20_timing_summary_synth.rpt"/>
   <File Type="RDS-RDS" Name="cva6_zybo_z7_20.vds"/>
@@ -1988,24 +1988,18 @@
     </Config>
   </FileSet>
   <Strategy Version="1" Minor="2">
-    <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2024">
-      <Desc>Vivado Synthesis Defaults</Desc>
+    <StratHandle Name="Flow_PerfOptimized_high" Flow="Vivado Synthesis 2024">
+      <Desc>Higher performance designs, resource sharing is turned off, the global fanout guide is set to a lower number, FSM extraction forced to one-hot, LUT combining is disabled, equivalent registers are preserved, SRL are inferred  with a larger threshold</Desc>
     </StratHandle>
     <Step Id="synth_design">
-      <Option Id="CascadeDsp">1</Option>
-      <Option Id="ControlSetOptThreshold">64</Option>
-      <Option Id="Directive">0</Option>
+      <Option Id="Directive">7</Option>
       <Option Id="FsmExtraction">1</Option>
-      <Option Id="GatedClockConversion">2</Option>
       <Option Id="GlobalReTiming">1</Option>
-      <Option Id="IncrementalMode">0</Option>
       <Option Id="KeepEquivalentRegisters">1</Option>
-      <Option Id="MaxClockBufferCount">24</Option>
       <Option Id="NoCombineLuts">1</Option>
-      <Option Id="NoSrlExtract">1</Option>
       <Option Id="ReTiming">1</Option>
       <Option Id="ResourceSharing">2</Option>
-      <Option Id="ShregMinSize">24</Option>
+      <Option Id="ShregMinSize">5</Option>
     </Step>
   </Strategy>
 </GenRun>

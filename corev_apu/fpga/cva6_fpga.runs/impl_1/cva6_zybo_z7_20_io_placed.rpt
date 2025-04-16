@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version              : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
-| Date                      : Wed Apr 16 17:05:48 2025
+| Date                      : Fri Apr  4 19:29:29 2025
 | Host                      : aubervilliers running 64-bit Ubuntu 20.04.6 LTS
 | Command                   : report_io -file cva6_zybo_z7_20_io_placed.rpt
 | Design                    : cva6_zybo_z7_20
