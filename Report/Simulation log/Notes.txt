@@ -1,0 +1,12 @@
+Bonjour,
+
+Nous avons décidé de rédiger ce fichier texte afin de faire part de nos résultats de simulation sous Questa.
+Dans l’environnement Questa, pour une raison que nous ignorons, nous ne recevons aucun retour UART.
+
+Pourtant, en observant les waves que nous avons ajoutées pour chaque simulation, nous retrouvons bien en sortie les informations attendues.
+La branche Git master correspond à notre architecture supportant une fréquence de 50 MHz.
+Or, cette architecture fonctionnelle ne comporte que des optimisations dans le script sélectionnant les paramètres de synthèse et d’implémentation.
+
+Nous pensons que cela ne devrait pas impacter nos simulations Questa ; cependant, nous constatons ce problème inattendu, d’autant plus surprenant que l’exécution sur carte fonctionne parfaitement.
+
+L'équipe CS_ELEN
